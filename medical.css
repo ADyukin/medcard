@@ -7,6 +7,9 @@
 }
 
 .page-content { text-align: left; user-select: none; -webkit-user-select: none; }
+.medical-toc-fallback { color: var(--text); }
+.medical-toc-fallback p:not(.medical-eyebrow) { margin: 0 0 18px; }
+.medical-toc-fallback span { color: var(--text-dim); }
 .page-content p::first-letter { color: inherit; font-size: inherit; }
 .book-control-proxy { display: none; }
 .medical-filters { position: fixed; right: 0; bottom: 24px; left: 0; z-index: 80; display: grid; gap: 8px; overflow: hidden; padding: 0 0 env(safe-area-inset-bottom) 8px; pointer-events: none; }
@@ -43,7 +46,7 @@
 .scene:hover .book.single-page { transform: translateX(-45.6%) rotateX(3deg); }
 
 @media (max-width: 768px), (max-aspect-ratio: 4/5) {
-  .book.single-page { --page-h: min(90vh, calc(100vh - 130px)); }
+  .book.single-page { --page-h: min(78vh, calc(100vh - 150px)); }
   .scene .book.single-page,
   .scene:hover .book.single-page { transform: translateX(-45.6%) rotateX(3deg); }
 }
