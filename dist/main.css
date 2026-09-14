@@ -11,21 +11,21 @@
 
 /* --- Тема: Медкарта --- */
 :root, [data-theme="paper"] {
-  --bg: #e8eef2;
-  --bg-texture: radial-gradient(ellipse at 50% 36%, #f4f8fa 0%, #e4edf1 66%, #d7e2e6 100%);
-  --page-bg: #fffdf8;
-  --page-edge: #edf2f0;
-  --text: #252b2f;
-  --text-dim: #7b837f;
-  --accent: #2f7f7b;
-  --panel-bg: rgba(255, 253, 248, 0.9);
-  --shadow-book: rgba(41, 62, 68, 0.22);
-  --shadow-page: rgba(52, 78, 84, 0.14);
+  --bg: #eef5f7;
+  --bg-texture: radial-gradient(ellipse at 50% 30%, #fbfeff 0%, #edf6f8 62%, #dfecef 100%);
+  --page-bg: #fffefa;
+  --page-edge: #e6f0f1;
+  --text: #20282c;
+  --text-dim: #778184;
+  --accent: #177e7b;
+  --panel-bg: rgba(255, 254, 250, 0.88);
+  --shadow-book: rgba(31, 70, 78, 0.16);
+  --shadow-page: rgba(31, 70, 78, 0.1);
   /* Твёрдая обложка теперь читается как медицинская папка */
-  --cover-a: #d9e8e8;
-  --cover-b: #b7cdcf;
-  --cover-edge: #7fa1a4;
-  --cover-line: rgba(47, 127, 123, 0.42);
+  --cover-a: #edf7f7;
+  --cover-b: #d6e8ea;
+  --cover-edge: #9bbcc0;
+  --cover-line: rgba(23, 126, 123, 0.32);
 }
 
 /* --- Тема: Сепия --- */

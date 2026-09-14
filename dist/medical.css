@@ -4,10 +4,10 @@
   --line-height: 1.48;
   --margins: 42px;
   --vmargins: 38px;
-  --medical-chip-bg: rgba(255, 253, 248, 0.72);
-  --medical-chip-active-bg: rgba(47, 127, 123, 0.13);
-  --medical-chip-text: #3d625f;
-  --medical-chip-border: rgba(47, 127, 123, 0.1);
+  --medical-chip-bg: rgba(255, 255, 255, 0.74);
+  --medical-chip-active-bg: rgba(23, 126, 123, 0.12);
+  --medical-chip-text: #46666a;
+  --medical-chip-border: rgba(23, 126, 123, 0.12);
 }
 
 .page-content { text-align: left; user-select: none; -webkit-user-select: none; }
@@ -32,7 +32,8 @@
 .medical-toc .toc-item strong { display: block; font-size: 14px; }
 .medical-toc .toc-item span { display: block; margin-top: 4px; color: var(--text-dim); font-size: 12px; }
 .medical-toc .bookmarks-close { font-size: 26px; }
-.medical-entry { margin-bottom: 20px !important; }
+.medical-entry { margin-bottom: 20px !important; padding-bottom: 14px; border-bottom: 1px solid rgba(23, 126, 123, 0.08); }
+.medical-entry:last-of-type { border-bottom: 0; }
 .medical-entry-title { display: flex; justify-content: space-between; gap: 18px; align-items: baseline; }
 .medical-entry-title strong { font-size: 15px; line-height: 1.25; }
 .medical-entry-page { color: var(--accent); font-size: 13px; white-space: nowrap; }
@@ -54,7 +55,7 @@
   .scene .book.single-page,
   .scene:hover .book.single-page { transform: translateX(-45.6%) rotateX(3deg); }
 }
-.record-overlay { position: fixed; inset: 0; z-index: 300; display: flex; justify-content: center; align-items: stretch; overflow: hidden; padding: 24px 0 0; box-sizing: border-box; background: rgba(219,232,236,.68); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); opacity: 0; pointer-events: none; transition: opacity .32s var(--ease-out); }
+.record-overlay { position: fixed; inset: 0; z-index: 300; display: flex; justify-content: center; align-items: stretch; overflow: hidden; padding: 24px 0 0; box-sizing: border-box; background: rgba(222,237,240,.72); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); opacity: 0; pointer-events: none; transition: opacity .32s var(--ease-out); }
 .record-overlay.is-open { opacity: 1; pointer-events: auto; }
 .record-sheet { position: relative; width: 100vw; height: 100%; max-height: none; padding: var(--vmargins) var(--margins) 110px; overflow: auto; border-radius: 40px 40px 0 0; background: var(--page-bg); color: var(--text); box-shadow: none; transform: translateY(100%); transition: transform .62s cubic-bezier(.22,1,.36,1); }
 .record-overlay.is-open .record-sheet { transform: translateY(0); }

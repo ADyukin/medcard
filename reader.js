@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=10';
+import { resolveAnchorPage } from './position.js?v=11';
 
 const FLIP_DURATION = 750; // мс
 
