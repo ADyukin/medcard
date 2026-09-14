@@ -99,6 +99,7 @@
 
 /* Левая страница — пустая подложка (контент скрыт) */
 .book.single-page .page-left .page-content { visibility: hidden; }
+.book.single-page.is-flipping .page-right .page-content { visibility: hidden; }
 
 /* Правая (текстовая) страница: левый край у корешка — прямой, без
    скруглений; скруглён только внешний правый край. */

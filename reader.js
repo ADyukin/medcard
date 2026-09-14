@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=22';
+import { resolveAnchorPage } from './position.js?v=23';
 
 const FLIP_DURATION = 750; // мс
 
@@ -301,18 +301,9 @@ export class Reader {
 
     const from = dragAngle ?? (forward ? 0 : 180);
     const to = forward ? 180 : 0;
-    // Вперёд подложка готовится заранее и принудительно отрисовывается
-    // до старта 3D-листа — это предотвращает пустой/старый кадр в начале.
-    // Назад подложка остаётся текущей: предыдущая страница должна появиться
-    // только на лицевой стороне листа после середины поворота.
-    if (forward) {
-      this.underRight.innerHTML = this.pages[nextIndex] ?? '';
-      void this.underRight.offsetHeight;
-    }
-
     const sheet = this._makeSheet(frontHTML, backHTML);
     this._setSingleSheetAngle(sheet, from);
-    void sheet.offsetHeight;
+    this.book.classList.add('is-flipping');
 
     const applyAngle = (deg) => {
       this._setSingleSheetAngle(sheet, deg);
@@ -343,6 +334,7 @@ export class Reader {
             this.underRight.innerHTML = this.pages[nextIndex] ?? '';
           }
           sheet.remove();
+          this.book.classList.remove('is-flipping');
           this.castLeft.style.opacity = 0;
           this.castRight.style.opacity = 0;
           this._commitSinglePage(nextIndex);
@@ -410,7 +402,8 @@ export class Reader {
         // повторно. Теперь листок остаётся лежать, где его оставили.)
         if (Math.abs(target - deg) < 1) {
           if (this.singlePage) {
-            // Целевая страница уже находится под листом.
+            this.underRight.innerHTML = this.pages[this.currentSpread + (forward ? step : -step)] ?? '';
+            this.book.classList.remove('is-flipping');
           }
           sheet.remove();
           this.castLeft.style.opacity = 0;
@@ -490,6 +483,7 @@ export class Reader {
           if (!forward) {
             this.underRight.innerHTML = this.pages[this.currentSpread - step] ?? '';
           }
+          this.book.classList.remove('is-flipping');
         }
         sheet.remove();
         this.castLeft.style.opacity = 0;
@@ -543,8 +537,10 @@ export class Reader {
 
       if (t < 1) {
         requestAnimationFrame(step);
-      } else {
-        sheet.remove();
+        } else {
+          this.underRight.innerHTML = this.pages[nextIndex] ?? '';
+          sheet.remove();
+          this.book.classList.remove('is-flipping');
         this._renderSpread();
         this.isAnimating = false;
       }
@@ -558,8 +554,9 @@ export class Reader {
     const frontHTML = forward
       ? this.pages[this.currentSpread] ?? ''
       : this.pages[this.currentSpread - 1] ?? '';
-    // Обратная сторона листа в одностраничном режиме всегда пустая
-    const backHTML = '';
+    const backHTML = forward
+      ? this.pages[this.currentSpread + 1] ?? ''
+      : this.pages[this.currentSpread] ?? '';
 
     // Откат: возвращаем подложку на текущую страницу
     this.underRight.innerHTML = this.pages[this.currentSpread] ?? '';
@@ -580,6 +577,7 @@ export class Reader {
         requestAnimationFrame(step);
       } else {
         sheet.remove();
+        this.book.classList.remove('is-flipping');
         this.isAnimating = false;
       }
     };
