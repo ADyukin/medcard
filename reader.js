@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=25';
+import { resolveAnchorPage } from './position.js?v=26';
 
 const FLIP_DURATION = 750; // мс
 
@@ -289,13 +289,13 @@ export class Reader {
      вращается вокруг левого края, шаг ±1 вместо ±2. */
   _flipSingle(direction, dragAngle = null) {
     const forward = direction === 'forward';
+    const nextIndex = this.currentSpread + (forward ? 1 : -1);
     const frontHTML = forward
       ? this.pages[this.currentSpread] ?? ''           // старое лицо листа
       : this.pages[this.currentSpread - 1] ?? '';      // новое лицо (для назад)
-    // Как в исходном book_reader: обратная сторона листа пустая.
-    // Новая страница заранее лежит под листом, поэтому DOM не меняется
-    // в середине 3D-анимации и текст не дублируется.
-    const backHTML = '';
+    // Вперёд оборот пустой, как в исходном book_reader. Назад на обороте
+    // остаётся текущая страница, пока новый лист не закроет её полностью.
+    const backHTML = forward ? '' : this.pages[this.currentSpread] ?? '';
 
     if (forward) {
       this.underRight.innerHTML = this.pages[this.currentSpread + 1] ?? '';
@@ -327,11 +327,15 @@ export class Reader {
       if (t < 1) {
         requestAnimationFrame(step);
       } else {
+        // Назад целевой HTML подменяется, пока лист полностью закрывает
+        // подложку. Вперёд он уже был подложен до старта анимации.
+        if (!forward) this.underRight.innerHTML = this.pages[nextIndex] ?? '';
         sheet.remove();
         this.castLeft.style.opacity = 0;
         this.castRight.style.opacity = 0;
-        this.currentSpread += forward ? 1 : -1;
-        this._renderSpread();
+        // Не вызываем _renderSpread(): повторная запись того же innerHTML
+        // заставляла WebKit пересоздавать текстовый слой и давала моргание.
+        this._commitSinglePage(nextIndex);
         this.isAnimating = false;
       }
     };
@@ -472,11 +476,19 @@ export class Reader {
       if (t < 1) {
         requestAnimationFrame(tick);
       } else {
+        const nextIndex = this.currentSpread + (forward ? step : -step);
+        if (this.singlePage && !forward) {
+          this.underRight.innerHTML = this.pages[nextIndex] ?? '';
+        }
         sheet.remove();
         this.castLeft.style.opacity = 0;
         this.castRight.style.opacity = 0;
-        this.currentSpread += forward ? step : -step;
-        this._renderSpread();
+        if (this.singlePage) {
+          this._commitSinglePage(nextIndex);
+        } else {
+          this.currentSpread = nextIndex;
+          this._renderSpread();
+        }
         this.isAnimating = false;
       }
     };
@@ -535,9 +547,7 @@ export class Reader {
     const frontHTML = forward
       ? this.pages[this.currentSpread] ?? ''
       : this.pages[this.currentSpread - 1] ?? '';
-    const backHTML = forward
-      ? this.pages[this.currentSpread + 1] ?? ''
-      : this.pages[this.currentSpread] ?? '';
+    const backHTML = forward ? '' : this.pages[this.currentSpread] ?? '';
 
     // Откат: возвращаем подложку на текущую страницу
     this.underRight.innerHTML = this.pages[this.currentSpread] ?? '';
