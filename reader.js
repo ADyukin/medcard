@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=19';
+import { resolveAnchorPage } from './position.js?v=20';
 
 const FLIP_DURATION = 750; // мс
 
@@ -318,27 +318,31 @@ export class Reader {
       return { sheet, applyAngle };
     }
 
-    // Звук — вместе со стартом движения листа (как в двухстраничном режиме)
-    this.onFlip?.();
+    // Блокируем повторный жест сразу, но даём браузеру сначала отрисовать
+    // начальный лист и подложку. Иначе WebKit может показать один кадр
+    // подложки до того, как 3D-лист попадёт в композитный слой.
     this.isAnimating = true;
-    const start = performance.now();
+    requestAnimationFrame(() => {
+      this.onFlip?.();
+      const start = performance.now();
 
-    const step = (now) => {
-      const t = Math.min((now - start) / FLIP_DURATION, 1);
-      const deg = from + (to - from) * easeInOutCubic(t);
-      applyAngle(deg);
+      const step = (now) => {
+        const t = Math.min((now - start) / FLIP_DURATION, 1);
+        const deg = from + (to - from) * easeInOutCubic(t);
+        applyAngle(deg);
 
-      if (t < 1) {
-        requestAnimationFrame(step);
-      } else {
-        sheet.remove();
-        this.castLeft.style.opacity = 0;
-        this.castRight.style.opacity = 0;
-        this._commitSinglePage(nextIndex);
-        this.isAnimating = false;
-      }
-    };
-    requestAnimationFrame(step);
+        if (t < 1) {
+          requestAnimationFrame(step);
+        } else {
+          sheet.remove();
+          this.castLeft.style.opacity = 0;
+          this.castRight.style.opacity = 0;
+          this._commitSinglePage(nextIndex);
+          this.isAnimating = false;
+        }
+      };
+      requestAnimationFrame(step);
+    });
   }
 
   /* ---------- Drag углом ---------- */
