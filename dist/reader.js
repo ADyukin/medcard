@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=18';
+import { resolveAnchorPage } from './position.js?v=19';
 
 const FLIP_DURATION = 750; // мс
 
@@ -303,6 +303,11 @@ export class Reader {
 
     const from = dragAngle ?? (forward ? 0 : 180);
     const to = forward ? 180 : 0;
+    // Подложка готова до первого кадра. Обе стороны листа и подложка
+    // показывают одну и ту же целевую страницу после середины поворота,
+    // поэтому DOM не меняется ни в середине, ни в финале анимации.
+    this._setSingleSheetAngle(sheet, from);
+    this.underRight.innerHTML = this.pages[nextIndex] ?? '';
 
     const applyAngle = (deg) => {
       this._setSingleSheetAngle(sheet, deg);
@@ -326,7 +331,6 @@ export class Reader {
       if (t < 1) {
         requestAnimationFrame(step);
       } else {
-        this.underRight.innerHTML = this.pages[nextIndex] ?? '';
         sheet.remove();
         this.castLeft.style.opacity = 0;
         this.castRight.style.opacity = 0;
@@ -394,7 +398,7 @@ export class Reader {
         // повторно. Теперь листок остаётся лежать, где его оставили.)
         if (Math.abs(target - deg) < 1) {
           if (this.singlePage) {
-            this.underRight.innerHTML = this.pages[this.currentSpread + (forward ? step : -step)] ?? '';
+            // Целевая страница уже находится под листом.
           }
           sheet.remove();
           this.castLeft.style.opacity = 0;
@@ -471,7 +475,7 @@ export class Reader {
         requestAnimationFrame(tick);
       } else {
         if (this.singlePage) {
-          this.underRight.innerHTML = this.pages[this.currentSpread + (forward ? step : -step)] ?? '';
+          // Целевая страница уже находится под листом.
         }
         sheet.remove();
         this.castLeft.style.opacity = 0;

@@ -357,20 +357,10 @@
   inset: 0;
   background: var(--page-bg);
   overflow: hidden;
-  isolation: isolate;
-  contain: paint;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   will-change: transform;
   transition: background-color 0.4s;
-}
-
-/* Текст листа держим отдельным compositor-слоем: при повороте меняется
-   только положение готового слоя, а не растеризация каждой строки. */
-.flip-face .page-content {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
 }
 
 .flip-front {
