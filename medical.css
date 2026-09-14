@@ -4,6 +4,10 @@
   --line-height: 1.48;
   --margins: 42px;
   --vmargins: 38px;
+  --medical-chip-bg: rgba(255, 253, 248, 0.72);
+  --medical-chip-active-bg: rgba(47, 127, 123, 0.13);
+  --medical-chip-text: #3d625f;
+  --medical-chip-border: rgba(47, 127, 123, 0.1);
 }
 
 .page-content { text-align: left; user-select: none; -webkit-user-select: none; }
@@ -17,9 +21,9 @@
 .medical-filters:not(.month-view) .month-filters { display: none; }
 .filter-row { display: flex; gap: 8px; overflow-x: auto; padding: 0 0 2px; scrollbar-width: none; pointer-events: auto; }
 .filter-row::-webkit-scrollbar { display: none; }
-.filter-chip { flex: 0 0 auto; border: 0; border-radius: 9px; padding: 6px 12px; background: rgba(158,140,104,.08); color: #5f4927; font-size: 14px; line-height: 19px; white-space: nowrap; cursor: pointer; transition: background .2s ease, color .2s ease, transform .2s ease; }
+.filter-chip { flex: 0 0 auto; border: 1px solid var(--medical-chip-border); border-radius: 9px; padding: 6px 12px; background: var(--medical-chip-bg); color: var(--medical-chip-text); font-size: 14px; line-height: 19px; white-space: nowrap; cursor: pointer; transition: background .2s ease, color .2s ease, transform .2s ease; }
 .filter-chip:first-child { margin-left: 0; }
-.filter-chip.is-active { background: rgba(158,140,104,.16); color: #5f4927; }
+.filter-chip.is-active { background: var(--medical-chip-active-bg); color: var(--accent); }
 .filter-chip:active { transform: scale(.97); }
 .medical-eyebrow { color: var(--text-dim); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px !important; }
 .medical-title { color: var(--text); font-size: 28px; font-weight: 400; line-height: 1.1; margin-bottom: 24px !important; }
@@ -50,7 +54,7 @@
   .scene .book.single-page,
   .scene:hover .book.single-page { transform: translateX(-45.6%) rotateX(3deg); }
 }
-.record-overlay { position: fixed; inset: 0; z-index: 300; display: flex; justify-content: center; align-items: stretch; overflow: hidden; padding: 24px 0 0; box-sizing: border-box; background: rgba(223,232,242,.64); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); opacity: 0; pointer-events: none; transition: opacity .32s var(--ease-out); }
+.record-overlay { position: fixed; inset: 0; z-index: 300; display: flex; justify-content: center; align-items: stretch; overflow: hidden; padding: 24px 0 0; box-sizing: border-box; background: rgba(219,232,236,.68); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); opacity: 0; pointer-events: none; transition: opacity .32s var(--ease-out); }
 .record-overlay.is-open { opacity: 1; pointer-events: auto; }
 .record-sheet { position: relative; width: 100vw; height: 100%; max-height: none; padding: var(--vmargins) var(--margins) 110px; overflow: auto; border-radius: 40px 40px 0 0; background: var(--page-bg); color: var(--text); box-shadow: none; transform: translateY(100%); transition: transform .62s cubic-bezier(.22,1,.36,1); }
 .record-overlay.is-open .record-sheet { transform: translateY(0); }

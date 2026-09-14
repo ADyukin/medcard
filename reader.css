@@ -58,14 +58,11 @@
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
   background:
-    /* блик освещения */
-    radial-gradient(120% 90% at 32% 18%, rgba(255,255,255,0.12), transparent 55%),
-    /* паз корешка в центре — виден на верхнем и нижнем выступе */
-    linear-gradient(to right, transparent calc(50% - 16px), rgba(0,0,0,0.45) 0%, transparent calc(50% + 16px)),
-    /* тонкая зернистость кожи */
-    repeating-linear-gradient(115deg, rgba(255,255,255,0.025) 0 2px, rgba(0,0,0,0.035) 2px 4px),
+    radial-gradient(120% 90% at 32% 18%, rgba(255,255,255,0.42), transparent 58%),
+    linear-gradient(to right, transparent calc(50% - 16px), rgba(67, 99, 106, 0.18) 0%, transparent calc(50% + 16px)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.12) 0 1px, rgba(47, 127, 123, 0.035) 1px 3px),
     linear-gradient(135deg, var(--cover-a), var(--cover-b));
-  box-shadow: inset 0 0 24px rgba(0,0,0,0.35);
+  box-shadow: inset 0 0 18px rgba(47, 76, 82, 0.16);
   pointer-events: none;
 }
 

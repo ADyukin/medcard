@@ -9,23 +9,23 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* --- Тема: Бумага --- */
+/* --- Тема: Медкарта --- */
 :root, [data-theme="paper"] {
-  --bg: #e8e2d4;
-  --bg-texture: radial-gradient(ellipse at 50% 40%, #efe9db 0%, #e0d8c6 70%, #d5ccb8 100%);
-  --page-bg: #fbf8f0;
-  --page-edge: #efe9db;
-  --text: #2e2a24;
-  --text-dim: #8a8172;
-  --accent: #a06b32;
-  --panel-bg: rgba(251, 248, 240, 0.92);
-  --shadow-book: rgba(60, 48, 30, 0.35);
-  --shadow-page: rgba(60, 48, 30, 0.18);
-  /* Твёрдая обложка (кожа) */
-  --cover-a: #6b4226;
-  --cover-b: #452818;
-  --cover-edge: #2e1a0e;
-  --cover-line: rgba(216, 178, 106, 0.6);
+  --bg: #e8eef2;
+  --bg-texture: radial-gradient(ellipse at 50% 36%, #f4f8fa 0%, #e4edf1 66%, #d7e2e6 100%);
+  --page-bg: #fffdf8;
+  --page-edge: #edf2f0;
+  --text: #252b2f;
+  --text-dim: #7b837f;
+  --accent: #2f7f7b;
+  --panel-bg: rgba(255, 253, 248, 0.9);
+  --shadow-book: rgba(41, 62, 68, 0.22);
+  --shadow-page: rgba(52, 78, 84, 0.14);
+  /* Твёрдая обложка теперь читается как медицинская папка */
+  --cover-a: #d9e8e8;
+  --cover-b: #b7cdcf;
+  --cover-edge: #7fa1a4;
+  --cover-line: rgba(47, 127, 123, 0.42);
 }
 
 /* --- Тема: Сепия --- */
