@@ -123,7 +123,6 @@
 .book.single-page .flip-front { border-radius: 0 10px 10px 0; }
 .book.single-page .flip-back { border-radius: 10px 0 0 10px; }
 .book.single-page .flip-back .page-content { transform: rotateY(180deg); }
-.book.single-page .flip-sheet.past-half .flip-front { visibility: hidden; }
 
 /* Тени в одностраничном режиме */
 .book.single-page .cast-shadow.on-left { display: none; }

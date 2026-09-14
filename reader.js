@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=17';
+import { resolveAnchorPage } from './position.js?v=18';
 
 const FLIP_DURATION = 750; // мс
 
@@ -184,11 +184,6 @@ export class Reader {
 
   _setSingleSheetAngle(sheet, deg) {
     sheet.style.transform = `rotateY(${-deg}deg)`;
-    const pastHalf = deg >= 90;
-    if (sheet.dataset.pastHalf !== String(pastHalf)) {
-      sheet.dataset.pastHalf = String(pastHalf);
-      sheet.classList.toggle('past-half', pastHalf);
-    }
   }
 
   _makeCastShadow(cls) {
@@ -297,13 +292,12 @@ export class Reader {
     const frontHTML = forward
       ? this.pages[this.currentSpread] ?? ''           // старое лицо листа
       : this.pages[this.currentSpread - 1] ?? '';      // новое лицо (для назад)
-    // Как в исходном book_reader: следующая страница лежит под листом,
-    // поэтому оборот листа не содержит второго экземпляра текста.
-    // Это исключает конкуренцию двух текстовых слоёв в 3D-композитинге.
-    const backHTML = '';
-
     const nextIndex = this.currentSpread + (forward ? 1 : -1);
-    this.underRight.innerHTML = this.pages[forward ? nextIndex : this.currentSpread] ?? '';
+    // Обе стороны листа содержат свои страницы. Благодаря этому текст
+    // переходит вместе с листом без появления пустого кадра на середине.
+    const backHTML = forward
+      ? this.pages[nextIndex] ?? ''
+      : this.pages[this.currentSpread] ?? '';
 
     const sheet = this._makeSheet(frontHTML, backHTML);
 
@@ -332,7 +326,7 @@ export class Reader {
       if (t < 1) {
         requestAnimationFrame(step);
       } else {
-        if (!forward) this.underRight.innerHTML = this.pages[nextIndex] ?? '';
+        this.underRight.innerHTML = this.pages[nextIndex] ?? '';
         sheet.remove();
         this.castLeft.style.opacity = 0;
         this.castRight.style.opacity = 0;
@@ -399,8 +393,8 @@ export class Reader {
         // перелистывание заново — лист «прыгал» в начало и анимировался
         // повторно. Теперь листок остаётся лежать, где его оставили.)
         if (Math.abs(target - deg) < 1) {
-          if (this.singlePage && !forward) {
-            this.underRight.innerHTML = this.pages[this.currentSpread - step] ?? '';
+          if (this.singlePage) {
+            this.underRight.innerHTML = this.pages[this.currentSpread + (forward ? step : -step)] ?? '';
           }
           sheet.remove();
           this.castLeft.style.opacity = 0;
@@ -476,8 +470,8 @@ export class Reader {
       if (t < 1) {
         requestAnimationFrame(tick);
       } else {
-        if (this.singlePage && !forward) {
-          this.underRight.innerHTML = this.pages[this.currentSpread - step] ?? '';
+        if (this.singlePage) {
+          this.underRight.innerHTML = this.pages[this.currentSpread + (forward ? step : -step)] ?? '';
         }
         sheet.remove();
         this.castLeft.style.opacity = 0;
