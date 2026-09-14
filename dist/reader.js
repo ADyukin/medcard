@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=6';
+import { resolveAnchorPage } from './position.js?v=7';
 
 const FLIP_DURATION = 750; // мс
 
@@ -286,14 +286,12 @@ export class Reader {
     const frontHTML = forward
       ? this.pages[this.currentSpread] ?? ''           // старое лицо листа
       : this.pages[this.currentSpread - 1] ?? '';      // новое лицо (для назад)
-    // Обратная сторона листа в одностраничном режиме всегда пустая:
-    // текст только на видимой стороне, чтобы не было «зеркального» текста.
-    const backHTML = '';
-
-    // ВПЕРЁД: следующая страница заранее лежит под листом.
-    if (forward) {
-      this.underRight.innerHTML = this.pages[this.currentSpread + 1] ?? '';
-    }
+    // Следующая страница живёт на обороте листа до завершения флипа.
+    // Подложка не пересоздаётся в начале движения, поэтому не возникает
+    // пустого кадра из-за промежуточной перерисовки DOM.
+    const backHTML = forward
+      ? this.pages[this.currentSpread + 1] ?? ''
+      : this.pages[this.currentSpread] ?? '';
 
     const sheet = this._makeSheet(frontHTML, backHTML);
     const shadeFront = sheet.querySelector('.flip-shade-front');
