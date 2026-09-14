@@ -40,12 +40,17 @@
 .medical-entry-meta { color: var(--text-dim); font-size: 11px; line-height: 1.35; }
 .medical-document-date { color: var(--text-dim); font-size: 14px; margin-bottom: 2px !important; }
 .medical-document-author { font-size: 16px; margin-bottom: 22px !important; }
-.medical-document h2 { font-family: var(--font-serif); font-size: 16px; line-height: 1.28; margin: 18px 0 3px; }
+.medical-document h2 { font-family: var(--font-serif); font-size: 16px; line-height: 1.28; margin: 0 0 4px; }
 .medical-document p { margin-bottom: 8px; }
 .medical-document .diagnosis { color: var(--accent); }
 .medical-record-page { position: relative; height: 100%; overflow: hidden; cursor: pointer; }
 .medical-record-page > *:not(.medical-page-fade) { position: relative; z-index: 1; }
-.medical-record-lead { margin: 22px 0 0 !important; font-size: 16px; }
+.medical-record-lead { margin: 26px 0 30px !important; font-size: 16px; }
+.medical-record-details { display: block; }
+.medical-record-group { margin: 0 0 28px; }
+.medical-record-group h2 { margin: 0 0 4px; }
+.medical-record-group p { margin: 0; }
+.medical-record-group:last-child { margin-bottom: 0; }
 .medical-page-fade { position: absolute; z-index: 2; right: 0; bottom: 0; left: 0; height: 92px; pointer-events: none; background: linear-gradient(to bottom, rgba(251,248,240,0), var(--page-bg) 78%); }
 .scene:hover .book { transform: rotateX(7deg); }
 .scene:hover .book.single-page { transform: translateX(-45.6%) rotateX(3deg); }
@@ -63,9 +68,13 @@
 .record-overlay-content { position: relative; z-index: 1; font-size: var(--font-size); line-height: var(--line-height); user-select: none; -webkit-user-select: none; }
 .record-overlay-content .medical-document-date { font-size: 14px; }
 .record-overlay-content .medical-document-author { font-size: 16px; }
-.record-overlay-content .medical-record-lead { margin-top: 22px !important; font-size: 16px; }
-.record-overlay-content h2 { margin-top: 18px; font-size: 16px; line-height: 1.28; }
+.record-overlay-content .medical-record-lead { margin: 26px 0 30px !important; font-size: 16px; }
+.record-overlay-content h2 { margin: 0 0 4px; font-size: 16px; line-height: 1.28; }
 .record-overlay-content p { margin-bottom: .9em; }
+.record-overlay-content .medical-record-group { margin: 0 0 28px; }
+.record-overlay-content .medical-record-group h2 { margin: 0 0 4px; }
+.record-overlay-content .medical-record-group p { margin: 0; }
+.record-overlay-content .medical-record-group:last-child { margin-bottom: 0; }
 .record-overlay-fade { display: none; }
 
 @media (max-width: 768px) {

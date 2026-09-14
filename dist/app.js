@@ -1,4 +1,4 @@
-import { Reader } from './reader.js?v=11';
+import { Reader } from './reader.js?v=13';
 
 const records = [
   { title: '18 февраля 2026 · Терапевт', meta: 'Новикова Е. С. · Городская поликлиника № 17', page: 1, sections: [['Кем направлен', 'Самостоятельно.'], ['Жалобы и анамнез заболевания', 'Повышенная утомляемость, периодическая головная боль в течение двух недель. Сон удовлетворительный.'], ['Объективный статус', 'Общее состояние удовлетворительное. Температура тела 36,7 °C. Кожные покровы обычной окраски.'], ['Рекомендации', 'Наблюдение в динамике. Результаты назначенных исследований — в приложении к записи.']] },
@@ -9,7 +9,7 @@ const records = [
 ];
 
 const esc = value => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const section = (title, body) => `<h2>${title}</h2><p>${body}</p>`;
+const section = (title, body) => `<section class="medical-record-group"><h2>${title}</h2><p>${body}</p></section>`;
 
 function tocPage() {
   return `<p class="medical-eyebrow">Медицинская карта · Приёмы</p><h1 class="medical-title">Содержание</h1>
@@ -24,7 +24,7 @@ function recordPage(record, index) {
     <p class="medical-document-date">${esc(record.title.split(' · ')[0])}</p>
     <p class="medical-document-author">${index === 0 ? 'Пронина А.И' : esc(record.meta.split(' · ')[0])}</p>
     <p class="medical-record-lead">Приём: первичный.</p>
-    ${details}
+    <div class="medical-record-details">${details}</div>
     <div class="medical-page-fade" aria-hidden="true"></div>
   </article>`;
 }
