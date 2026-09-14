@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=4';
+import { resolveAnchorPage } from './position.js?v=5';
 
 const FLIP_DURATION = 750; // мс
 
@@ -52,7 +52,9 @@ export class Reader {
     this.singlePage = single;
     this.book.classList.toggle('single-page', single);
     // Нормализуем позицию при переключении режима
+    const previousSpread = this.currentSpread;
     this.goTo(this.currentSpread);
+    if (this.currentSpread === previousSpread) this._renderSpread();
   }
 
   /* ---------- Публичное API ---------- */
