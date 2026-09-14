@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=20';
+import { resolveAnchorPage } from './position.js?v=22';
 
 const FLIP_DURATION = 750; // мс
 
@@ -299,15 +299,20 @@ export class Reader {
       ? this.pages[nextIndex] ?? ''
       : this.pages[this.currentSpread] ?? '';
 
-    const sheet = this._makeSheet(frontHTML, backHTML);
-
     const from = dragAngle ?? (forward ? 0 : 180);
     const to = forward ? 180 : 0;
-    // Подложка готова до первого кадра. Обе стороны листа и подложка
-    // показывают одну и ту же целевую страницу после середины поворота,
-    // поэтому DOM не меняется ни в середине, ни в финале анимации.
+    // Вперёд подложка готовится заранее и принудительно отрисовывается
+    // до старта 3D-листа — это предотвращает пустой/старый кадр в начале.
+    // Назад подложка остаётся текущей: предыдущая страница должна появиться
+    // только на лицевой стороне листа после середины поворота.
+    if (forward) {
+      this.underRight.innerHTML = this.pages[nextIndex] ?? '';
+      void this.underRight.offsetHeight;
+    }
+
+    const sheet = this._makeSheet(frontHTML, backHTML);
     this._setSingleSheetAngle(sheet, from);
-    this.underRight.innerHTML = this.pages[nextIndex] ?? '';
+    void sheet.offsetHeight;
 
     const applyAngle = (deg) => {
       this._setSingleSheetAngle(sheet, deg);
@@ -334,6 +339,9 @@ export class Reader {
         if (t < 1) {
           requestAnimationFrame(step);
         } else {
+          if (!forward) {
+            this.underRight.innerHTML = this.pages[nextIndex] ?? '';
+          }
           sheet.remove();
           this.castLeft.style.opacity = 0;
           this.castRight.style.opacity = 0;
@@ -479,7 +487,9 @@ export class Reader {
         requestAnimationFrame(tick);
       } else {
         if (this.singlePage) {
-          // Целевая страница уже находится под листом.
+          if (!forward) {
+            this.underRight.innerHTML = this.pages[this.currentSpread - step] ?? '';
+          }
         }
         sheet.remove();
         this.castLeft.style.opacity = 0;
