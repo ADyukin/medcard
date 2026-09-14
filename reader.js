@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=16';
+import { resolveAnchorPage } from './position.js?v=17';
 
 const FLIP_DURATION = 750; // мс
 
@@ -182,6 +182,15 @@ export class Reader {
     return sheet;
   }
 
+  _setSingleSheetAngle(sheet, deg) {
+    sheet.style.transform = `rotateY(${-deg}deg)`;
+    const pastHalf = deg >= 90;
+    if (sheet.dataset.pastHalf !== String(pastHalf)) {
+      sheet.dataset.pastHalf = String(pastHalf);
+      sheet.classList.toggle('past-half', pastHalf);
+    }
+  }
+
   _makeCastShadow(cls) {
     const el = document.createElement('div');
     el.className = `cast-shadow ${cls}`;
@@ -294,26 +303,15 @@ export class Reader {
     const backHTML = '';
 
     const nextIndex = this.currentSpread + (forward ? 1 : -1);
-    this.underRight.innerHTML = this.pages[nextIndex] ?? '';
+    this.underRight.innerHTML = this.pages[forward ? nextIndex : this.currentSpread] ?? '';
 
     const sheet = this._makeSheet(frontHTML, backHTML);
-    const shadeFront = sheet.querySelector('.flip-shade-front');
-    const shadeBack = sheet.querySelector('.flip-shade-back');
 
     const from = dragAngle ?? (forward ? 0 : 180);
     const to = forward ? 180 : 0;
 
     const applyAngle = (deg) => {
-      sheet.style.transform = `rotateY(${-deg}deg)`;
-      const rad = (deg * Math.PI) / 180;
-      // Тень на самом листе
-      const selfShade = Math.sin(rad) * 0.55;
-      shadeFront.style.opacity = deg < 90 ? selfShade : 0;
-      shadeBack.style.opacity = deg >= 90 ? selfShade : 0;
-      // Тень на лежащей странице (в single-режиме только правая)
-      const cast = Math.sin(rad) * 0.5;
-      this.castRight.style.opacity = forward ? cast : 0;
-      this.castLeft.style.opacity = 0;
+      this._setSingleSheetAngle(sheet, deg);
     };
 
     if (dragAngle !== null) {
@@ -334,6 +332,7 @@ export class Reader {
       if (t < 1) {
         requestAnimationFrame(step);
       } else {
+        if (!forward) this.underRight.innerHTML = this.pages[nextIndex] ?? '';
         sheet.remove();
         this.castLeft.style.opacity = 0;
         this.castRight.style.opacity = 0;
@@ -400,6 +399,9 @@ export class Reader {
         // перелистывание заново — лист «прыгал» в начало и анимировался
         // повторно. Теперь листок остаётся лежать, где его оставили.)
         if (Math.abs(target - deg) < 1) {
+          if (this.singlePage && !forward) {
+            this.underRight.innerHTML = this.pages[this.currentSpread - step] ?? '';
+          }
           sheet.remove();
           this.castLeft.style.opacity = 0;
           this.castRight.style.opacity = 0;
@@ -454,18 +456,19 @@ export class Reader {
     const tick = (now) => {
       const t = Math.min((now - start) / dur, 1);
       const deg = fromDeg + (to - fromDeg) * easeInOutCubic(t);
-      sheet.style.transform = `rotateY(${-deg}deg)`;
-      const rad = (deg * Math.PI) / 180;
-      // Тень на самом листе: максимум в середине поворота
-      const selfShade = Math.sin(rad) * 0.55;
-      shadeFront.style.opacity = deg < 90 ? selfShade : 0;
-      shadeBack.style.opacity = deg >= 90 ? selfShade : 0;
-      // Тень на лежащей странице
-      const cast = Math.sin(rad) * 0.5;
       if (this.singlePage) {
-        this.castRight.style.opacity = forward ? cast : 0;
+        this._setSingleSheetAngle(sheet, deg);
         this.castLeft.style.opacity = 0;
+        this.castRight.style.opacity = 0;
       } else {
+        sheet.style.transform = `rotateY(${-deg}deg)`;
+        const rad = (deg * Math.PI) / 180;
+        // Тень на самом листе: максимум в середине поворота
+        const selfShade = Math.sin(rad) * 0.55;
+        shadeFront.style.opacity = deg < 90 ? selfShade : 0;
+        shadeBack.style.opacity = deg >= 90 ? selfShade : 0;
+        // Тень на лежащей странице
+        const cast = Math.sin(rad) * 0.5;
         this.castLeft.style.opacity = forward ? cast : 0;
         this.castRight.style.opacity = forward ? 0 : cast;
       }
@@ -473,6 +476,9 @@ export class Reader {
       if (t < 1) {
         requestAnimationFrame(tick);
       } else {
+        if (this.singlePage && !forward) {
+          this.underRight.innerHTML = this.pages[this.currentSpread - step] ?? '';
+        }
         sheet.remove();
         this.castLeft.style.opacity = 0;
         this.castRight.style.opacity = 0;
@@ -547,8 +553,6 @@ export class Reader {
     this.underRight.innerHTML = this.pages[this.currentSpread] ?? '';
 
     const sheet = this._makeSheet(frontHTML, backHTML);
-    const shadeFront = sheet.querySelector('.flip-shade-front');
-    const shadeBack = sheet.querySelector('.flip-shade-back');
 
     this.isAnimating = true;
     const to = forward ? 0 : 180;
@@ -558,11 +562,7 @@ export class Reader {
     const step = (now) => {
       const t = Math.min((now - start) / dur, 1);
       const deg = fromDeg + (to - fromDeg) * easeInOutCubic(t);
-      sheet.style.transform = `rotateY(${-deg}deg)`;
-      const rad = (deg * Math.PI) / 180;
-      const selfShade = Math.sin(rad) * 0.55;
-      shadeFront.style.opacity = deg < 90 ? selfShade : 0;
-      shadeBack.style.opacity = deg >= 90 ? selfShade : 0;
+      this._setSingleSheetAngle(sheet, deg);
 
       if (t < 1) {
         requestAnimationFrame(step);
