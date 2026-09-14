@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=27';
+import { resolveAnchorPage } from './position.js?v=28';
 
 const FLIP_DURATION = 750; // мс
 
@@ -218,7 +218,7 @@ export class Reader {
     // левую страницу, меняем срузу.
     if (forward) {
       this.underRight.innerHTML = this.pages[this.currentSpread + 3] ?? '';
-    } else if (dragAngle >= 0) { // !== null
+    } else if (dragAngle !== null) {
       // Drag назад: лист появляется уже повёрнутым — подложку меняем сразу
       this.underLeft.innerHTML = this.pages[this.currentSpread - 2] ?? '';
     }
