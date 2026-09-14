@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=23';
+import { resolveAnchorPage } from './position.js?v=25';
 
 const FLIP_DURATION = 750; // мс
 
@@ -292,18 +292,19 @@ export class Reader {
     const frontHTML = forward
       ? this.pages[this.currentSpread] ?? ''           // старое лицо листа
       : this.pages[this.currentSpread - 1] ?? '';      // новое лицо (для назад)
-    const nextIndex = this.currentSpread + (forward ? 1 : -1);
-    // Обе стороны листа содержат свои страницы. Благодаря этому текст
-    // переходит вместе с листом без появления пустого кадра на середине.
-    const backHTML = forward
-      ? this.pages[nextIndex] ?? ''
-      : this.pages[this.currentSpread] ?? '';
+    // Как в исходном book_reader: обратная сторона листа пустая.
+    // Новая страница заранее лежит под листом, поэтому DOM не меняется
+    // в середине 3D-анимации и текст не дублируется.
+    const backHTML = '';
+
+    if (forward) {
+      this.underRight.innerHTML = this.pages[this.currentSpread + 1] ?? '';
+    }
 
     const from = dragAngle ?? (forward ? 0 : 180);
     const to = forward ? 180 : 0;
     const sheet = this._makeSheet(frontHTML, backHTML);
     this._setSingleSheetAngle(sheet, from);
-    this.book.classList.add('is-flipping');
 
     const applyAngle = (deg) => {
       this._setSingleSheetAngle(sheet, deg);
@@ -314,35 +315,27 @@ export class Reader {
       return { sheet, applyAngle };
     }
 
-    // Блокируем повторный жест сразу, но даём браузеру сначала отрисовать
-    // начальный лист и подложку. Иначе WebKit может показать один кадр
-    // подложки до того, как 3D-лист попадёт в композитный слой.
     this.isAnimating = true;
-    requestAnimationFrame(() => {
-      this.onFlip?.();
-      const start = performance.now();
+    this.onFlip?.();
+    const start = performance.now();
 
-      const step = (now) => {
-        const t = Math.min((now - start) / FLIP_DURATION, 1);
-        const deg = from + (to - from) * easeInOutCubic(t);
-        applyAngle(deg);
+    const step = (now) => {
+      const t = Math.min((now - start) / FLIP_DURATION, 1);
+      const deg = from + (to - from) * easeInOutCubic(t);
+      applyAngle(deg);
 
-        if (t < 1) {
-          requestAnimationFrame(step);
-        } else {
-          if (!forward) {
-            this.underRight.innerHTML = this.pages[nextIndex] ?? '';
-          }
-          sheet.remove();
-          this.book.classList.remove('is-flipping');
-          this.castLeft.style.opacity = 0;
-          this.castRight.style.opacity = 0;
-          this._commitSinglePage(nextIndex);
-          this.isAnimating = false;
-        }
-      };
-      requestAnimationFrame(step);
-    });
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        sheet.remove();
+        this.castLeft.style.opacity = 0;
+        this.castRight.style.opacity = 0;
+        this.currentSpread += forward ? 1 : -1;
+        this._renderSpread();
+        this.isAnimating = false;
+      }
+    };
+    requestAnimationFrame(step);
   }
 
   /* ---------- Drag углом ---------- */
@@ -479,21 +472,11 @@ export class Reader {
       if (t < 1) {
         requestAnimationFrame(tick);
       } else {
-        if (this.singlePage) {
-          if (!forward) {
-            this.underRight.innerHTML = this.pages[this.currentSpread - step] ?? '';
-          }
-          this.book.classList.remove('is-flipping');
-        }
         sheet.remove();
         this.castLeft.style.opacity = 0;
         this.castRight.style.opacity = 0;
-        if (this.singlePage) {
-          this._commitSinglePage(this.currentSpread + (forward ? step : -step));
-        } else {
-          this.currentSpread += forward ? step : -step;
-          this._renderSpread();
-        }
+        this.currentSpread += forward ? step : -step;
+        this._renderSpread();
         this.isAnimating = false;
       }
     };
@@ -537,10 +520,8 @@ export class Reader {
 
       if (t < 1) {
         requestAnimationFrame(step);
-        } else {
-          this.underRight.innerHTML = this.pages[nextIndex] ?? '';
-          sheet.remove();
-          this.book.classList.remove('is-flipping');
+      } else {
+        sheet.remove();
         this._renderSpread();
         this.isAnimating = false;
       }
