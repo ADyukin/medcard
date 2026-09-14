@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=13';
+import { resolveAnchorPage } from './position.js?v=14';
 
 const FLIP_DURATION = 750; // мс
 
@@ -160,6 +160,14 @@ export class Reader {
     document.getElementById('progressFill').style.width = `${ratio * 100}%`;
   }
 
+  _commitSinglePage(nextIndex) {
+    // В одностраничном режиме целевая страница уже лежит под листом.
+    // Меняем только состояние и прогресс, не пересоздавая её DOM после флипа.
+    this.currentSpread = nextIndex;
+    this._updateProgress();
+    this.onPageChange?.(this.currentSpread);
+  }
+
   /* ---------- Создание листа ---------- */
 
   _makeSheet(frontHTML, backHTML) {
@@ -291,9 +299,8 @@ export class Reader {
     // Это исключает конкуренцию двух текстовых слоёв в 3D-композитинге.
     const backHTML = '';
 
-    if (forward) {
-      this.underRight.innerHTML = this.pages[this.currentSpread + 1] ?? '';
-    }
+    const nextIndex = this.currentSpread + (forward ? 1 : -1);
+    this.underRight.innerHTML = this.pages[nextIndex] ?? '';
 
     const sheet = this._makeSheet(frontHTML, backHTML);
     const shadeFront = sheet.querySelector('.flip-shade-front');
@@ -336,8 +343,7 @@ export class Reader {
         sheet.remove();
         this.castLeft.style.opacity = 0;
         this.castRight.style.opacity = 0;
-        this.currentSpread += forward ? 1 : -1;
-        this._renderSpread();
+        this._commitSinglePage(nextIndex);
         this.isAnimating = false;
       }
     };
@@ -403,8 +409,12 @@ export class Reader {
           sheet.remove();
           this.castLeft.style.opacity = 0;
           this.castRight.style.opacity = 0;
-          this.currentSpread += forward ? step : -step;
-          this._renderSpread();
+          if (this.singlePage) {
+            this._commitSinglePage(this.currentSpread + (forward ? step : -step));
+          } else {
+            this.currentSpread += forward ? step : -step;
+            this._renderSpread();
+          }
           this.onFlip?.(); // звук перелистывания
           return;
         }
@@ -472,8 +482,12 @@ export class Reader {
         sheet.remove();
         this.castLeft.style.opacity = 0;
         this.castRight.style.opacity = 0;
-        this.currentSpread += forward ? step : -step;
-        this._renderSpread();
+        if (this.singlePage) {
+          this._commitSinglePage(this.currentSpread + (forward ? step : -step));
+        } else {
+          this.currentSpread += forward ? step : -step;
+          this._renderSpread();
+        }
         this.isAnimating = false;
       }
     };
@@ -560,7 +574,6 @@ export class Reader {
         requestAnimationFrame(step);
       } else {
         sheet.remove();
-        this._renderSpread();
         this.isAnimating = false;
       }
     };
