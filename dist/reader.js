@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=28';
+import { resolveAnchorPage } from './position.js?v=29';
 
 const FLIP_DURATION = 750; // мс
 
@@ -182,8 +182,10 @@ export class Reader {
     return sheet;
   }
 
-  _setSingleSheetAngle(sheet, deg) {
-    sheet.style.transform = `rotateY(${-deg}deg)`;
+  _setSheetAngle(sheet, deg) {
+    // Небольшой постоянный Z-зазор не даёт WebKit смешивать текст листа
+    // и статичной страницы, когда поверхности совпадают при 0°/180°.
+    sheet.style.transform = `translateZ(0.5px) rotateY(${-deg}deg)`;
   }
 
   _makeCastShadow(cls) {
@@ -207,8 +209,13 @@ export class Reader {
       // Назад: оборот листа = ТЕКУЩАЯ левая страница — старый текст
       // остаётся на листе, пока лист не пройдёт 90°
       : this.pages[this.currentSpread] ?? '';
+    const from = dragAngle ?? (forward ? 0 : 180);
+    const to = forward ? 180 : 0;
 
     const sheet = this._makeSheet(frontHTML, backHTML);
+    // Начальное положение задаём синхронно до подмены подложки. Раньше
+    // первый transform появлялся только в rAF, оставляя один кадр наложения.
+    this._setSheetAngle(sheet, from);
     const shadeFront = sheet.querySelector('.flip-shade-front');
     const shadeBack = sheet.querySelector('.flip-shade-back');
     const backContent = sheet.querySelector('.flip-back .page-content');
@@ -223,8 +230,6 @@ export class Reader {
       this.underLeft.innerHTML = this.pages[this.currentSpread - 2] ?? '';
     }
 
-    const from = dragAngle ?? (forward ? 0 : 180);
-    const to = forward ? 180 : 0;
     // Порог, после которого лист перестаёт закрывать левую страницу
     // (только для флипа назад): тогда подкладываем новую страницу.
     let underSwapped = forward || dragAngle !== null;
@@ -234,7 +239,7 @@ export class Reader {
     // filter/marginTop здесь вызывали перерисовку текста каждый кадр (рывки),
     // а filter к тому же ломал preserve-3d (зеркальный текст на обороте листа).
     const applyAngle = (deg) => {
-      sheet.style.transform = `rotateY(${-deg}deg)`;
+      this._setSheetAngle(sheet, deg);
       if (!underSwapped && deg < 90) {
         underSwapped = true;
         this.underLeft.innerHTML = this.pages[this.currentSpread - 2] ?? '';
@@ -311,10 +316,10 @@ export class Reader {
     const from = dragAngle ?? (forward ? 0 : 180);
     const to = forward ? 180 : 0;
     const sheet = this._makeSheet(frontHTML, backHTML);
-    this._setSingleSheetAngle(sheet, from);
+    this._setSheetAngle(sheet, from);
 
     const applyAngle = (deg) => {
-      this._setSingleSheetAngle(sheet, deg);
+      this._setSheetAngle(sheet, deg);
     };
 
     if (dragAngle !== null) {
@@ -464,11 +469,11 @@ export class Reader {
       const t = Math.min((now - start) / dur, 1);
       const deg = fromDeg + (to - fromDeg) * easeInOutCubic(t);
       if (this.singlePage) {
-        this._setSingleSheetAngle(sheet, deg);
+        this._setSheetAngle(sheet, deg);
         this.castLeft.style.opacity = 0;
         this.castRight.style.opacity = 0;
       } else {
-        sheet.style.transform = `rotateY(${-deg}deg)`;
+        this._setSheetAngle(sheet, deg);
         const rad = (deg * Math.PI) / 180;
         // Тень на самом листе: максимум в середине поворота
         const selfShade = Math.sin(rad) * 0.55;
@@ -521,6 +526,7 @@ export class Reader {
     }
 
     const sheet = this._makeSheet(frontHTML, backHTML);
+    this._setSheetAngle(sheet, fromDeg);
     const shadeFront = sheet.querySelector('.flip-shade-front');
     const shadeBack = sheet.querySelector('.flip-shade-back');
     const backContent = sheet.querySelector('.flip-back .page-content');
@@ -533,7 +539,7 @@ export class Reader {
     const step = (now) => {
       const t = Math.min((now - start) / dur, 1);
       const deg = fromDeg + (to - fromDeg) * easeInOutCubic(t);
-      sheet.style.transform = `rotateY(${-deg}deg)`;
+      this._setSheetAngle(sheet, deg);
       // Назад: после 90° оборот листа становится новой правой страницей
       if (!forward && deg < 90 && backContent.dataset.swapped !== '1') {
         backContent.innerHTML = this.pages[this.currentSpread - 1] ?? '';
@@ -566,6 +572,7 @@ export class Reader {
     this.underRight.innerHTML = this.pages[this.currentSpread] ?? '';
 
     const sheet = this._makeSheet(frontHTML, backHTML);
+    this._setSheetAngle(sheet, fromDeg);
 
     this.isAnimating = true;
     const to = forward ? 0 : 180;
@@ -575,7 +582,7 @@ export class Reader {
     const step = (now) => {
       const t = Math.min((now - start) / dur, 1);
       const deg = fromDeg + (to - fromDeg) * easeInOutCubic(t);
-      this._setSingleSheetAngle(sheet, deg);
+      this._setSheetAngle(sheet, deg);
 
       if (t < 1) {
         requestAnimationFrame(step);
