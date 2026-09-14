@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru" data-theme="paper">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#e8e2d4" />
+    <title>Медицинская карта</title>
+    <link rel="icon" type="image/svg+xml" href="./book.svg" />
+    <link rel="stylesheet" href="./main.css" />
+    <link rel="stylesheet" href="./reader.css" />
+    <link rel="stylesheet" href="./medical.css" />
+  </head>
+  <body>
+    <main class="scene" id="scene">
+      <div class="book" id="book" aria-label="Медицинская карта">
+        <div class="book-shell" aria-hidden="true"></div>
+        <div class="page page-left"><div class="page-content" id="contentUnderLeft"></div></div>
+        <div class="page page-right"><div class="page-content" id="contentUnderRight"></div></div>
+        <div id="flipLayer"></div>
+      </div>
+    </main>
+
+    <button class="book-control-proxy" id="navLeft" aria-hidden="true" tabindex="-1"></button>
+    <button class="book-control-proxy" id="navRight" aria-hidden="true" tabindex="-1"></button>
+    <span id="progressText" hidden>стр. 1 / 1</span>
+    <span id="progressFill" hidden></span>
+
+    <nav class="medical-filters" aria-label="Фильтры медицинской карты">
+      <div class="filter-row category-filters" role="tablist" aria-label="Тип записи">
+        <button class="filter-chip is-active" type="button" data-category="Приёмы">Приёмы</button>
+        <button class="filter-chip" type="button" data-category="Анализы">Анализы</button>
+        <button class="filter-chip" type="button" data-category="Исследования">Исследования</button>
+        <button class="filter-chip" type="button" data-category="Вызовы скорой">Вызовы скорой</button>
+      </div>
+      <div class="filter-row month-filters" role="tablist" aria-label="Месяц">
+        <button class="filter-chip filter-back" type="button" data-filter-back aria-label="Вернуться к типам записей">‹</button>
+        <button class="filter-chip" type="button" data-month="Февраль">Февраль</button>
+        <button class="filter-chip" type="button" data-month="Декабрь">Декабрь</button>
+        <button class="filter-chip" type="button" data-month="Октябрь">Октябрь</button>
+        <button class="filter-chip" type="button" data-month="Сентябрь">Сентябрь</button>
+      </div>
+    </nav>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
