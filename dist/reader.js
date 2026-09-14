@@ -286,12 +286,17 @@ export class Reader {
     const frontHTML = forward
       ? this.pages[this.currentSpread] ?? ''           // старое лицо листа
       : this.pages[this.currentSpread - 1] ?? '';      // новое лицо (для назад)
-    // Оборот листа в одностраничном режиме оставляем пустым:
-    // следующая страница заранее находится под листом.
-    const backHTML = '';
+    // В single-page режиме оборот листа тоже должен нести текст:
+    // иначе после середины поворота видна пустая сторона листа.
+    const backHTML = forward
+      ? this.pages[this.currentSpread + 1] ?? ''
+      : this.pages[this.currentSpread] ?? '';
 
     if (forward) {
       this.underRight.innerHTML = this.pages[this.currentSpread + 1] ?? '';
+      // Дожидаемся первого layout/paint подложки до старта 3D-флипа.
+      // Иначе WebKit может показать пустой кадр в начале свайпа.
+      void this.underRight.offsetHeight;
     }
 
     const sheet = this._makeSheet(frontHTML, backHTML);
