@@ -1,6 +1,6 @@
 /* ===== BookHaven 3D — логика читалки: флип-анимация, drag, клавиатура ===== */
 
-import { resolveAnchorPage } from './position.js?v=5';
+import { resolveAnchorPage } from './position.js?v=6';
 
 const FLIP_DURATION = 750; // мс
 
@@ -146,6 +146,10 @@ export class Reader {
       this.underLeft.innerHTML = this.pages[this.currentSpread] ?? '';
       this.underRight.innerHTML = this.pages[this.currentSpread + 1] ?? '';
     }
+    // Mobile WebKit can postpone painting new HTML inside the 3D book layer
+    // until the next interaction. Commit one discrete layout read after the
+    // page swap so the content is visible immediately.
+    void this.book.offsetHeight;
     this._updateProgress();
     this.onPageChange?.(this.currentSpread);
   }
@@ -169,8 +173,10 @@ export class Reader {
       <div class="flip-face flip-back">
         <div class="page-content">${backHTML}</div>
         <div class="flip-shade-back"></div>
-      </div>`;
+    </div>`;
     this.flipLayer.appendChild(sheet);
+    // Force the newly created 3D sheet to get its first paint before motion.
+    void sheet.offsetHeight;
     return sheet;
   }
 
