@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="285" height="210" viewBox="20 68 245 180">
+  <title>BookHaven — открытая книга</title>
+  <desc>Логотип: раскрытая книга в кожаной обложке с золотым тиснением и лентой-закладкой.</desc>
+  <defs>
+    <!-- Кожа обложки: тёплый градиент как у книги в читалке -->
+    <linearGradient id="cover" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7a4f2c"/>
+      <stop offset="100%" stop-color="#452818"/>
+    </linearGradient>
+    <!-- Толщина обложки (торец) -->
+    <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5c3a20"/>
+      <stop offset="100%" stop-color="#2e1a0e"/>
+    </linearGradient>
+    <!-- Страницы: кремовая бумага -->
+    <linearGradient id="pageL" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f5edd6"/>
+      <stop offset="100%" stop-color="#fdf9ec"/>
+    </linearGradient>
+    <linearGradient id="pageR" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%" stop-color="#f5edd6"/>
+      <stop offset="100%" stop-color="#fdf9ec"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Толщина обложки (3D-торец под раскрытой книгой) -->
+  <path fill="url(#edge)" d="M 30,196
+    L 142,226
+    L 254,196
+    L 254,208
+    L 142,238
+    L 30,208 Z"/>
+
+  <!-- Кожаная обложка (раскрытая) -->
+  <path fill="url(#cover)" d="M 30,78
+    L 142,108
+    L 254,78
+    L 254,196
+    L 142,226
+    L 30,196 Z"/>
+
+  <!-- Золотое тиснение по краю обложки -->
+  <path fill="none" stroke="#d8b26a" stroke-width="4" stroke-linejoin="round" d="M 38,88
+    L 142,115
+    L 246,88
+    L 246,190
+    L 142,217
+    L 38,190 Z"/>
+
+  <!-- Левая страница -->
+  <path fill="url(#pageL)" d="M 46,92
+    L 136,114
+    L 136,192
+    L 46,170 Z"/>
+
+  <!-- Правая страница -->
+  <path fill="url(#pageR)" d="M 238,92
+    L 148,114
+    L 148,192
+    L 238,170 Z"/>
+
+  <!-- Корешковая тень между страницами -->
+  <path fill="#e8dcbc" d="M 136,114 L 142,117 L 148,114 L 148,192 L 142,196 L 136,192 Z"/>
+
+  <!-- Строки текста на левой странице -->
+  <g stroke="#c9b98f" stroke-width="4" stroke-linecap="round" opacity="0.8">
+    <line x1="58" y1="122" x2="126" y2="138"/>
+    <line x1="58" y1="136" x2="126" y2="152"/>
+    <line x1="58" y1="150" x2="112" y2="164"/>
+  </g>
+
+  <!-- Строки текста на правой странице -->
+  <g stroke="#c9b98f" stroke-width="4" stroke-linecap="round" opacity="0.8">
+    <line x1="158" y1="138" x2="226" y2="122"/>
+    <line x1="158" y1="152" x2="226" y2="136"/>
+    <line x1="158" y1="164" x2="212" y2="150"/>
+  </g>
+
+  <!-- Лента-закладка: свисает из правой страницы -->
+  <path fill="#a04b32" d="M 204,128
+    L 216,132
+    L 216,178
+    L 210,171
+    L 204,178 Z"/>
+</svg>
